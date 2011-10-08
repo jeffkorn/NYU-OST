@@ -9,6 +9,7 @@ import os
 import tarfile
 import urlparse
 import zipfile
+import StringIO
 
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
@@ -283,7 +284,7 @@ def cgi_admin(sid=None, hw=None):
     grades[(r.sid,r.asgn)] = r.final_score
   students = []
   for r in user_query:
-    info = { 'name' : r.name, 'sid' : r.sid, 'grades' : [] }
+    info = { 'name' : r.name, 'sid' : r.sid or r.email, 'grades' : [] }
     for hw in config.hws():
       grade = {'asgn' : hw}
       if grades.has_key((r.sid, hw)):
@@ -374,6 +375,29 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     return output_template('scores.tpl', template_values)
     # grader.showAllGrades(sid)
 
+class DownloadHandler(webapp.RequestHandler):
+  def get(self):
+    s = get_user_info()
+    if s.sid not in config.admins():
+      return
+    zipstream = StringIO.StringIO()
+    file = zipfile.ZipFile(zipstream, "w")
+
+    query = db.Query(UploadContent)
+    query.filter('assignment =', 'hw1')
+    num = 0
+    for r in query:
+      b = blobstore.BlobReader(r.blob_key)
+      # fn = 'ost_%s/%s.%s' % (r.assignment, r.sid or r.email, r.filename)
+      fn = 'ost/%s ' % num
+      num = num + 1
+      logging.debug('Write file %s' % fn)
+      file.writestr(fn, b.read())
+    file.close()
+    zipstream.seek(0)
+    self.response.headers['Content-Type'] = 'applicaton/zip'
+    self.response.headers['Content-Disposition'] = 'attachment; filename="bundle.zip"'
+    self.response.out.write(zipstream.getvalue())
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
   def post(self):
@@ -389,7 +413,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
       return
     for upload in self.get_uploads():
       fn = os.path.basename(upload.filename)
-      f = UploadContent(key_name='%s:%s' % (s.key().name(), fn))
+      f = UploadContent(key_name='%s:%s:%s' % (s.key().name(), asgn, fn))
       f.filename = fn
       f.assignment = asgn
       f.content_len = str(upload.size)
@@ -440,6 +464,7 @@ def main():
     ('/grader.cgi', ReqHandler),
     ('/upload_hw', UploadHwHandler),
     ('/upload', UploadHandler),
+    ('/download', DownloadHandler),
   ], debug=True)
   run_wsgi_app(app)
 
