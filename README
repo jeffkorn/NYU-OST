@@ -1,2 +1,9 @@
-Open Source Tools Grader System
-For App Engine
+To test:
+ ~/google_appengine/dev_appserver.py -d .
+  # -d = debug, -c = clear data first
+
+To deploy:
+ ~/google_appengine/appcfg.py update .
+
+Console:
+  http://localhost:8080/_ah/admin/datastore
