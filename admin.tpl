@@ -19,7 +19,11 @@
   {% for hw in s.grades %}
     <td><a href="grader.cgi?command=admin&sid={{s.sid}}&hw={{hw.asgn}}">
         {% ifequal hw.score '' %}
-        <font color=gray>{{hw.asgn}}</font>
+          {% ifequal hw.submitted '1' %}
+          <font color=black>{{hw.asgn}}</font>
+          {% else %}
+          <font color=gray>{{hw.asgn}}</font>
+          {% endifequal %}
         {% else %}
         <font color=black>{{hw.asgn}} ({{hw.score}})</font>
         {% endifequal %}

@@ -279,9 +279,13 @@ def cgi_admin(sid=None, hw=None):
     #return output_template('admin_grade.tpl', template_values)
   grade_query = db.Query(Grade)
   user_query = db.Query(UserInfo)
+  upload_query = db.Query(UploadContent)
   grades = {}
+  submitted = {}
   for r in grade_query:
     grades[(r.sid,r.asgn)] = r.final_score
+  for r in upload_query:
+    submitted[(r.sid,r.assignment)] = True
   students = []
   for r in user_query:
     info = { 'name' : r.name, 'sid' : r.sid or r.email, 'grades' : [] }
@@ -291,9 +295,14 @@ def cgi_admin(sid=None, hw=None):
         grade['score'] = grades[(r.sid, hw)]
       else:
         grade['score'] = ''
+      if submitted.has_key((r.sid, hw)):
+        grade['submitted'] = '1'
+      else:
+        grade['submitted'] = '0'
       info['grades'].append(grade)
+    info['grades'].sort(key=lambda x: x['asgn'])
     students.append(info)
-  students.sort()
+  students.sort(key=lambda x: x['sid'])
   template_values = {
     'students' : students,
   }
@@ -388,8 +397,10 @@ class DownloadHandler(webapp.RequestHandler):
     num = 0
     for r in query:
       b = blobstore.BlobReader(r.blob_key)
-      # fn = 'ost_%s/%s.%s' % (r.assignment, r.sid or r.email, r.filename)
-      fn = 'ost/%s ' % num
+      fn = 'ost_%s/%s.%s' % (str(r.assignment), str(r.sid or r.email),
+                             str(r.filename))
+      # fn = 'ost/%s ' % num
+      # fn = 'ost_%s/%s.%s' % (r.assignment, r.sid or r.email, num)
       num = num + 1
       logging.debug('Write file %s' % fn)
       file.writestr(fn, b.read())
@@ -470,4 +481,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-
