@@ -279,6 +279,7 @@ def cgi_admin(sid=None, hw=None):
     #return output_template('admin_grade.tpl', template_values)
   grade_query = db.Query(Grade)
   user_query = db.Query(UserInfo)
+  user_query.filter('sid !=', None)
   upload_query = db.Query(UploadContent)
   grades = {}
   submitted = {}

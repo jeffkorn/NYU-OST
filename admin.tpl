@@ -15,7 +15,7 @@
 
 {% for s in students %}
 <tr>
-<td>{{s.sid}}</td>
+<td title="{{s.name}}">{{s.sid}}</td>
   {% for hw in s.grades %}
     <td><a href="grader.cgi?command=admin&sid={{s.sid}}&hw={{hw.asgn}}">
         {% ifequal hw.score '' %}
