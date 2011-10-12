@@ -6,6 +6,7 @@ ROOT = '/home/unixtool/public_html/hw_fall10/hw'
 
 ADMINS = [
   'N00000000',
+  'N14771834',
 ]
 
 GRADERS = [
@@ -138,4 +139,3 @@ def graders():
 
 def root():
   return ROOT
-
