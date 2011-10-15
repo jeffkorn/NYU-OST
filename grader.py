@@ -64,8 +64,8 @@ class Grade(db.Model):
   penalty = db.StringProperty()
   extra_points = db.StringProperty()
   final_score = db.StringProperty()
-  comments = db.StringProperty()
-  private_comments = db.StringProperty()
+  comments = db.TextProperty()
+  private_comments = db.TextProperty()
   grader = db.StringProperty()
 
 ##################################
