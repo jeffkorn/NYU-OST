@@ -29,7 +29,7 @@ HWS = {
     'asgn': 'Assignment 1',
     'url': 'https://docs.google.com/document/pub?id=1C6lb1j3SZ7kc6OWzdXer1zUJSLMwz3bxQI2G-7Tw29g',
     'submit_url' : 0,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
   'hw2': {
     'due': '10/20/11 before class',
