@@ -7,6 +7,7 @@ ROOT = '/home/unixtool/public_html/hw_fall10/hw'
 ADMINS = [
   'N00000000',
   'N14771834',
+  'N19223762',
 ]
 
 GRADERS = [
