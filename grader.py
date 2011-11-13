@@ -390,11 +390,14 @@ class DownloadHandler(webapp.RequestHandler):
     s = get_user_info()
     if s.sid not in config.admins():
       return
+    if not self.request.params.has_key('asgn'):
+      return
     zipstream = StringIO.StringIO()
     file = zipfile.ZipFile(zipstream, "w")
 
+    asgn = self.request.params['asgn']
     query = db.Query(UploadContent)
-    query.filter('assignment =', 'hw1')
+    query.filter('assignment =', asgn)
     num = 0
     for r in query:
       b = blobstore.BlobReader(r.blob_key)
