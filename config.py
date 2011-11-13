@@ -37,25 +37,25 @@ HWS = {
     'asgn': 'Assignment 2',
     'url': 'https://docs.google.com/document/pub?id=15NUnbu360hGM7-_qiLdmnGaASVcSRzXgvGFcfjjMOhw',
     'submit_url' : 0,
+    'grades_released' : 1,
+  },
+  'hw3': {
+    'due': '11/10/11 before class',
+    'asgn': 'Assignment 3',
+    'url': 'https://docs.google.com/document/pub?id=1Q5OsJR5weGJaHIgSXVvr0AOFxGLG-1v0ZBTQT8ztBa0',
+    'submit_url' : 0,
+    'grades_released' : 0,
+  },
+  'hw4': {
+    'due': '12/1/11 before class',
+    'asgn': 'Assignment 4',
+    'url': 'https://docs.google.com/document/pub?id=1b1AIcL8Sn5vN0zh5mkw5kDaSl8AAaWp0ysYlH9IjW44',
+    'submit_url' : 1,
     'grades_released' : 0,
   },
 }
 
 UNASSIGNED_HWS = {
-  'hw3': {
-    'due': '11/16/10 9PM',
-    'asgn': 'Assignment 3',
-    'url': 'https://docs.google.com/View?id=d45v4sz_28hqhhndkf',
-    'submit_url' : 0,
-    'grades_released' : 1,
-  },
-  'hw4': {
-    'due': '11/30/10 9PM',
-    'asgn': 'Assignment 4',
-    'url': 'https://docs.google.com/document/pub?id=10a_BTjfpZASDLcViNz6kovB9GaShjfNc-2ustRd46Jg&pli=1',
-    'submit_url' : 1,
-    'grades_released' : 1,
-  },
  'prj': {
     'due': 'Due 12/l7, 2010 5:00PM',
     'asgn': 'Final Project',
