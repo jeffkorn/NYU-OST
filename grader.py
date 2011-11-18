@@ -451,6 +451,7 @@ class UploadHwHandler(webapp.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'text/plain'
     self.response.out.write(blobstore.create_upload_url('/upload'))
+    crash here
 
 class ReqHandler(webapp.RequestHandler):
   def get(self):
