@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import cgitb; cgitb.enable()
 import cgi
+import csv
 import config
 import datetime
 import hashlib
@@ -67,6 +68,12 @@ class Grade(db.Model):
   comments = db.TextProperty()
   private_comments = db.TextProperty()
   grader = db.StringProperty()
+
+class Exam(db.Model):
+  exam_id = db.StringProperty()
+  sid = db.StringProperty()
+  name = db.StringProperty()
+  score = db.FloatProperty()
 
 ##################################
 
@@ -380,7 +387,16 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     for r in query2:
       # config.hws()[r.assignment]['has_file'] = 1
       hws[idx[r.assignment]]['has_file'] = 1
+    query3 = db.Query(Exam)
+    query3.filter('sid =', student_sid)
+    exams = []
+    for r in query3:
+      exams.append({
+        'name' : config.exams()[r.exam_id]['name'],
+        'score' : r.score,
+      })
     template_values['hws'] = hws
+    template_values['exams'] = exams
     logging.info(str(template_values['hws'][0]))
     return output_template('scores.tpl', template_values)
     # grader.showAllGrades(sid)
@@ -451,7 +467,51 @@ class UploadHwHandler(webapp.RequestHandler):
   def get(self):
     self.response.headers['Content-Type'] = 'text/plain'
     self.response.out.write(blobstore.create_upload_url('/upload'))
-    crash here
+
+class UploadExamHandler(webapp.RequestHandler):
+  def get(self):
+      self.response.out.write('''
+        <form method="post" action="upload_exam" enctype="mutltipart/form-data">
+         Exam Name: <select name="exam_id">
+         ''')
+      for exam in config.exams().keys():
+        self.response.out.write('<option value="%s">%s</option>\n' % (exam,
+          config.exams()[exam]['name']));
+      self.response.out.write('''
+         </select>
+         <p>
+         <input type=file name=csv_import>
+         <p>
+         <input type=submit value="Upload">
+         ''')
+
+  def post(self):
+    s = get_user_info()
+    if s.sid not in config.admins():
+      return
+    exam_id = self.request.params.get('exam_id', '')
+    if not config.exams().has_key(exam_id):
+      return
+    csv_file = self.request.get('csv_import')
+    fileReader = csv.reader(csv_file.split('\n'))
+    self.response.out.write('<h1>%s</h1>\n<pre>' % exam_id)
+    count = 0
+    for row in fileReader:
+      if len(row) != 3:
+        self.response.out.write('skip record: %s\n' % ','.join(row))
+        continue
+      sid = row[0]
+      name = row[1]
+      score = row[2]
+      exam = Exam(key_name='%s:%s' % (sid, exam_id))
+      exam.exam_id = exam_id
+      exam.sid = sid
+      exam.name = name
+      exam.score = float(score)
+      exam.put()
+      count = count + 1
+    self.response.out.write('</pre>')
+    self.response.out.write('Uploaded %d records' % count)
 
 class ReqHandler(webapp.RequestHandler):
   def get(self):
@@ -480,6 +540,7 @@ def main():
     ('/grader.cgi', ReqHandler),
     ('/upload_hw', UploadHwHandler),
     ('/upload', UploadHandler),
+    ('/upload_exam', UploadExamHandler),
     ('/download', DownloadHandler),
   ], debug=True)
   run_wsgi_app(app)

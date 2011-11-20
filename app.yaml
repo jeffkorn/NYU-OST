@@ -11,11 +11,17 @@ handlers:
 - url: /upload
   script: grader.py
 
+- url: /upload_exam
+  script: grader.py
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
 - url: /(.*)
   script: grader.py
   login: required
   secure: always
-
 
 builtins:
 - remote_api: on

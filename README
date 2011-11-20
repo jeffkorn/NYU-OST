@@ -7,3 +7,8 @@ To deploy:
 
 Console:
   http://localhost:8080/_ah/admin/datastore
+
+Download data:
+  ~/google_appengine/appcfg.py download_data --url=http://nyu-csci.appspot.com/remote_api --filename=DOWNLOAD.csv --kind=Grade
+  ~/google_appengine/appcfg.py download_data --config_file=bulkloader.yaml --url=http://nyu-csci.appspot.com/remote_api --filename=dump.csv --kind=Grade
+

@@ -40,10 +40,10 @@
 
 {% endfor %}
 
-<!--
-<tr><td><b>Exam</b></td>
-<td>&nbsp;</td><td>Grade text</td></tr>
--->
+{% for exam in exams %}
+<tr><td><b>{{exam.name}}</b></td>
+<td>&nbsp;</td><td>{{exam.score}}</td></tr>
+{% endfor %}
 
 <tr><td><b><font color=red>Final Grade</font></b></td>
 <td>&nbsp;</td><td><b><font color=red>Avail in January</font></b></td></tr>
