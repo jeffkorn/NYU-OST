@@ -1,8 +1,8 @@
-<HTML><HEAD><TITLE>G22.3033-006: Open Source Tools</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2800.1106" name=GENERATOR></HEAD>
+<HTML>
+<HEAD><TITLE>G22.3033-006: Open Source Tools</TITLE>
+<META http-equiv=Content-Type content="text/html">
+</HEAD>
 <BODY>
-
 
 {% include "header.tpl" %}
 
@@ -14,7 +14,6 @@
 <table border=1 width=75%><tr>
 <td width=30%><b>Assignment</b></td><td width=30%><b>Status</b></td>
 <td><b>Grade</b></td></tr>
-
 
 {% for hw in hws %}
 
@@ -49,5 +48,5 @@
 <td>&nbsp;</td><td><b><font color=red>Avail in January</font></b></td></tr>
 
 </table>
-
-
+</BODY>
+</HTML>

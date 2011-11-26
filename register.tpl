@@ -103,8 +103,6 @@ function Cancel()
   </table>
   </form>
 
-
-
     <br><font face="trebuchet ms, Arial, Helvetica"><small><b><font size="1">
       Open Source Tools Course Homework submission system</font></b><font size=1><br>
       For problems or questions regarding this system contact <a 

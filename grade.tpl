@@ -1,8 +1,7 @@
 <HTML><HEAD><TITLE>G22.3033-006: Open Source Tools</TITLE>
-<META http-equiv=Content-Type content="text/html; charset=windows-1252">
-<META content="MSHTML 6.00.2800.1106" name=GENERATOR></HEAD>
+<META http-equiv=Content-Type content="text/html">
+</HEAD>
 <BODY>
-
 
 {% include "header.tpl" %}
 
@@ -22,12 +21,10 @@
 <input type=hidden name=student_sid value={{student_sid}}>
 {% endif %}
 
-
 <table width="95%" border="2" cellspacing="1" cellpadding="10" bordercolor=wheat bgcolor="#FFFFFF">
 <tr><td><center><font face="Arial, Helvetica, sans-serif">{{asgn}}</font><br>
 	Grader:
 {% if admin %}
-<!-- <input name=grader type=text value="{{grader}}"> {{graders}} -->
 
 <select name=grader>
 <option value=""></option>
@@ -97,8 +94,6 @@ Student: {{student_sid}}
 </form>
 </td></tr>
 {% endif %}
-
-
 	</table></center><br>&nbsp;
 </td></tr>
 </table>

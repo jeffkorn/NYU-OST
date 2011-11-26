@@ -1,4 +1,9 @@
 #!/usr/bin/python
+
+"""
+Grader for AppEngine.
+"""
+
 import cgitb; cgitb.enable()
 import cgi
 import csv
@@ -173,8 +178,11 @@ def fileinfo(content):
     return result
   except:
     pass
-  result.append({'name' : content.filename, 'size' : content.content_len,
-    'date' : date})
+  result.append({
+    'name' : content.filename,
+    'size' : content.content_len,
+    'date' : date,
+  })
   return result
 
 
@@ -189,10 +197,15 @@ def get_hws():
     hws[n]['name'] = n
     result.append(hws[n])
     idx[n] = i
-    i = i + 1
+    i += 1
   return (result, idx)
 
-#################
+def is_admin(sid):
+  return sid in config.admins()
+
+##############
+# CGI Commands
+##############
 
 def cgi_upload(asgn=None):
   s = get_user_info()
@@ -260,30 +273,18 @@ def cgi_register(sid=None, name='', email=''):
       'default_sid'   : s.sid or '',
     }
     return output_template('register.tpl', template_values)
+  elif register(sid=sid, name=name, email=email):
+    return cgi_home(sid=sid)
   else:
-    if register(sid=sid, name=name, email=email):
-      return cgi_home(sid=sid)
-    else:
-      return cgi_register()
+    return cgi_register()
 
 def cgi_admin(sid=None, hw=None):
   s = get_user_info()
   admin_sid = s.sid
-  if admin_sid not in config.admins():
+  if not is_admin(admin_sid):
     return cgi_home()
   if hw != None:
     return cgi_scores(asgn=hw, student_sid=sid)
-    #query = db.Query(Grade)
-    #query.filter('sid =', sid)
-    #query.filter('asgn =', hw)
-    #results = []
-    #for r in query:
-    #  result = {'final_score' : r.final_score }
-    #  results.append(result)
-    #if len(results) == 1:
-    #  template_values = results[0]
-    #  logging.info(str(template_values))
-    #return output_template('admin_grade.tpl', template_values)
   grade_query = db.Query(Grade)
   user_query = db.Query(UserInfo)
   user_query.filter('sid !=', None)
@@ -322,11 +323,10 @@ def cgi_home(sid=None):
   sid = s.sid
   if not sid:
     return cgi_register()
+  elif is_admin(sid):
+    return cgi_admin()
   else:
-    if sid in config.admins():
-      return cgi_admin()
-    else:
-      return cgi_upload()
+    return cgi_upload()
 
 def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
                final=None, comments=None, private_comments=None, grader=None,
@@ -335,16 +335,17 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
   sid = s.sid
   if not sid:
     return cgi_home()
-  student_sid = student_sid or sid
-  if sid not in config.admins():
+  if is_admin(sid):
+    student_sid = student_sid or sid
+  else:
     student_sid = sid
 
   template_values = {
     'sid' : sid,
-    'graders' : config.graders(),
+    'graders' : config.admins().values(),
     'student_sid' : student_sid,
   }
-  if asgn and sid in config.admins():
+  if asgn and is_admin(sid):
     template_values['admin'] = 1
     if store:
       g = Grade(key_name='%s:%s' % (student_sid, asgn))
@@ -376,16 +377,12 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
       template_values['comments'] = r.comments
       template_values['private_comments'] = r.private_comments
     return output_template('grade.tpl', template_values)
-    # grader.showGrade(sid, hw)
   else:
     (hws, idx) = get_hws()
     for r in query:
-      # config.hws()[r.asgn].update(r.__dict__)
       logging.info(r.asgn)
-      # hws[idx[r.asgn]].update(r.__dict__)
       hws[idx[r.asgn]]['final_score'] = r.final_score
     for r in query2:
-      # config.hws()[r.assignment]['has_file'] = 1
       hws[idx[r.assignment]]['has_file'] = 1
     query3 = db.Query(Exam)
     query3.filter('sid =', student_sid)
@@ -399,35 +396,28 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     template_values['exams'] = exams
     logging.info(str(template_values['hws'][0]))
     return output_template('scores.tpl', template_values)
-    # grader.showAllGrades(sid)
 
 class DownloadHandler(webapp.RequestHandler):
   def get(self):
     s = get_user_info()
-    if s.sid not in config.admins():
-      return
-    if not self.request.params.has_key('asgn'):
+    if not is_admin(s.sid) or not self.request.params.has_key('asgn'):
       return
     zipstream = StringIO.StringIO()
     file = zipfile.ZipFile(zipstream, "w")
-
     asgn = self.request.params['asgn']
     query = db.Query(UploadContent)
     query.filter('assignment =', asgn)
-    num = 0
     for r in query:
       b = blobstore.BlobReader(r.blob_key)
       fn = 'ost_%s/%s.%s' % (str(r.assignment), str(r.sid or r.email),
                              str(r.filename))
-      # fn = 'ost/%s ' % num
-      # fn = 'ost_%s/%s.%s' % (r.assignment, r.sid or r.email, num)
-      num = num + 1
       logging.debug('Write file %s' % fn)
       file.writestr(fn, b.read())
     file.close()
     zipstream.seek(0)
     self.response.headers['Content-Type'] = 'applicaton/zip'
-    self.response.headers['Content-Disposition'] = 'attachment; filename="bundle.zip"'
+    self.response.headers['Content-Disposition'] = \
+        'attachment; filename="bundle.zip"'
     self.response.out.write(zipstream.getvalue())
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
@@ -457,11 +447,10 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
       ul.assignment = asgn
       ul.sid = s.sid
       ul.blob_key = upload.key()
-      # ul.user = self.request.params['user']
       ul.action = 'upload'
       ul.put()
 
-      self.redirect('/grader.cgi?command=upload&asgn=%s' % f.assignment)
+    self.redirect('/grader.cgi?command=upload&asgn=%s' % f.assignment)
 
 class UploadHwHandler(webapp.RequestHandler):
   def get(self):
@@ -487,7 +476,7 @@ class UploadExamHandler(webapp.RequestHandler):
 
   def post(self):
     s = get_user_info()
-    if s.sid not in config.admins():
+    if not is_admin(s.sid):
       return
     exam_id = self.request.params.get('exam_id', '')
     if not config.exams().has_key(exam_id):
@@ -501,16 +490,14 @@ class UploadExamHandler(webapp.RequestHandler):
       if len(row) != 3:
         self.response.out.write('skip record: %s\n' % ','.join(row))
         continue
-      sid = row[0]
-      name = row[1]
-      score = row[2]
+      (sid, name, score) = row
       exam = Exam(key_name='%s:%s' % (sid, exam_id))
       exam.exam_id = exam_id
       exam.sid = sid
       exam.name = name
       exam.score = float(score)
       exam.put()
-      count = count + 1
+      count += 1
     self.response.out.write('</pre>')
     self.response.out.write('Uploaded %d records' % count)
 
@@ -521,28 +508,25 @@ class ReqHandler(webapp.RequestHandler):
     args = {}
     params = self.request.params
     for key in params:
-      logging.debug('Check %s' % key)
       args[str(key)] = params.get(key)
     logging.debug('Got args: %s' % str(args))
-    if args.has_key('command') and handlers.has_key('cgi_'+args['command']):
+    if args.has_key('command') and handlers.has_key('cgi_' + args['command']):
       handler = handlers['cgi_' + args['command']]
       del args['command']
-      # response = apply(handler, (), args)
       response = handler(**args)
     else:
       response = cgi_home()
-    # self.response.headers['Content-Type'] = 'text/plain'
     self.response.out.write(response)
 
 handlers = vars()
 
 def main():
   app = webapp.WSGIApplication([
-    ('/grader.cgi', ReqHandler),
-    ('/upload_hw', UploadHwHandler),
-    ('/upload', UploadHandler),
-    ('/upload_exam', UploadExamHandler),
-    ('/download', DownloadHandler),
+    ('/grader.cgi',   ReqHandler),
+    ('/upload_hw',    UploadHwHandler),
+    ('/upload',       UploadHandler),
+    ('/upload_exam',  UploadExamHandler),
+    ('/download',     DownloadHandler),
   ], debug=True)
   run_wsgi_app(app)
 

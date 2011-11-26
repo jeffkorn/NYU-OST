@@ -1,20 +1,11 @@
 import verify
 import math
 
-# Directory where submisions will be stored
-ROOT = '/home/unixtool/public_html/hw_fall10/hw'
-
-ADMINS = [
-  'N00000000',
-  'N14771834',
-  'N19223762',
-]
-
-GRADERS = [
-  'Prof. Korn',
-  'Royston Monteiro',
-  'Deniz Ulema',
-]
+ADMINS = {
+  'N00000000' : 'Prof. Korn',
+  'N14771834' : 'Royston Monteiro',
+  'N19223762' : 'Deniz Ulema',
+}
 
 HWS = {
   'hw0': {
@@ -119,8 +110,6 @@ UNASSIGNED_EXAMS = {
   },
 }
 
-FINAL_GRADES = '/home/unixtool/private/2010/grades.csv'
- 
 ######
 
 def admins():
@@ -131,12 +120,3 @@ def hws():
 
 def exams():
   return EXAMS
-
-def final_grades():
-  return FINAL_GRADES
-
-def graders():
-  return GRADERS
-
-def root():
-  return ROOT
