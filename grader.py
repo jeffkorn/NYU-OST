@@ -497,6 +497,7 @@ class UploadExamHandler(webapp.RequestHandler):
     self.response.out.write('<h1>%s</h1>\n<pre>' % exam_id)
     count = 0
     for row in fileReader:
+      if len(row) == 0: continue
       if len(row) != 3:
         self.response.out.write('skip record: %s\n' % ','.join(row))
         continue
