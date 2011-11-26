@@ -401,6 +401,9 @@ class DownloadHandler(webapp.RequestHandler):
   def get(self):
     s = get_user_info()
     if not is_admin(s.sid) or not self.request.params.has_key('asgn'):
+      template_values = { 'hws' : config.HWS, 'exams' : config.EXAMS }
+      self.response.out.write(output_template('admin_download.tpl',
+                                              template_values))
       return
     zipstream = StringIO.StringIO()
     file = zipfile.ZipFile(zipstream, "w")
@@ -459,20 +462,9 @@ class UploadHwHandler(webapp.RequestHandler):
 
 class UploadExamHandler(webapp.RequestHandler):
   def get(self):
-      self.response.out.write('''
-        <form method="post" action="upload_exam" enctype="mutltipart/form-data">
-         Exam Name: <select name="exam_id">
-         ''')
-      for exam in config.exams().keys():
-        self.response.out.write('<option value="%s">%s</option>\n' % (exam,
-          config.exams()[exam]['name']));
-      self.response.out.write('''
-         </select>
-         <p>
-         <input type=file name=csv_import>
-         <p>
-         <input type=submit value="Upload">
-         ''')
+    template_values = { 'hws' : config.HWS, 'exams' : config.EXAMS }
+    self.response.out.write(output_template('admin_upload.tpl',
+                                            template_values))
 
   def post(self):
     s = get_user_info()
@@ -522,6 +514,7 @@ handlers = vars()
 
 def main():
   app = webapp.WSGIApplication([
+    ('/',             ReqHandler),
     ('/grader.cgi',   ReqHandler),
     ('/upload_hw',    UploadHwHandler),
     ('/upload',       UploadHandler),

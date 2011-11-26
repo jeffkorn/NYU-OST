@@ -7,8 +7,9 @@ ADMINS = {
   'N19223762' : 'Deniz Ulema',
 }
 
-HWS = {
-  'hw0': {
+HWS = [
+  {
+    'id' : 'hw0',
     'due': '9/15/11 before class',
     'asgn': 'Assignment 0',
     'url': 'http://www.cs.nyu.edu/courses/fall11/CSCI-GA.3033-005/asgn/as0.html',
@@ -16,35 +17,39 @@ HWS = {
     'grades_released' : 0,
     'verify' : verify.hw1
   },
-  'hw1': {
+  {
+    'id' : 'hw1',
     'due': '9/29/11 before class',
     'asgn': 'Assignment 1',
     'url': 'https://docs.google.com/document/pub?id=1C6lb1j3SZ7kc6OWzdXer1zUJSLMwz3bxQI2G-7Tw29g',
     'submit_url' : 0,
     'grades_released' : 1,
   },
-  'hw2': {
+  {
+    'id' : 'hw2',
     'due': '10/20/11 before class',
     'asgn': 'Assignment 2',
     'url': 'https://docs.google.com/document/pub?id=15NUnbu360hGM7-_qiLdmnGaASVcSRzXgvGFcfjjMOhw',
     'submit_url' : 0,
     'grades_released' : 1,
   },
-  'hw3': {
+  {
+    'id' : 'hw3',
     'due': '11/10/11 before class',
     'asgn': 'Assignment 3',
     'url': 'https://docs.google.com/document/pub?id=1Q5OsJR5weGJaHIgSXVvr0AOFxGLG-1v0ZBTQT8ztBa0',
     'submit_url' : 0,
     'grades_released' : 0,
   },
-  'hw4': {
+  {
+    'id' : 'hw4',
     'due': '12/1/11 before class',
     'asgn': 'Assignment 4',
     'url': 'https://docs.google.com/document/pub?id=1b1AIcL8Sn5vN0zh5mkw5kDaSl8AAaWp0ysYlH9IjW44',
     'submit_url' : 1,
     'grades_released' : 0,
   },
-}
+]
 
 UNASSIGNED_HWS = {
  'prj': {
@@ -78,8 +83,9 @@ def projectGrade(points):
     grade = 'F'
   return grade
 
-EXAMS = { 
-  'test1': {
+EXAMS = [
+  {
+    'id' : 'test1',
     'name': 'Midterm',
     'file': '/home/unixtool/private/2010/midterm.csv',
     'grades_released' : 1,
@@ -89,7 +95,8 @@ EXAMS = {
    'adjust' : lambda x: 50.5 + (x/2),
     'letter' : 0,
   },
-  'test2': {
+  {
+    'id' : 'test2',
     'name': 'Final',
     'file': '/home/unixtool/private/2010/final.csv', 
     'grades_released' : 1,
@@ -97,7 +104,7 @@ EXAMS = {
     'adjust' : lambda x: 50 + (x/2),
     'letter' : 0,
   },
-}
+]
  
 UNASSIGNED_EXAMS = {
   'test3': {
@@ -112,11 +119,18 @@ UNASSIGNED_EXAMS = {
 
 ######
 
+HW_MAP = {}
+for hw in HWS:
+  HW_MAP[hw['id']] = hw
+EXAM_MAP = {}
+for exam in EXAMS:
+  HW_MAP[exam['id']] = exam
+
 def admins():
   return ADMINS
 
 def hws():
-  return HWS
+  return HW_MAP
 
 def exams():
-  return EXAMS
+  return EXAM_MAP

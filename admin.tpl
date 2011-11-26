@@ -6,6 +6,8 @@
 {% if sid %}
 <br>
 {% include "menu.tpl" %}
+{% else %}
+{% include "admin_menu.tpl" %}
 {% endif %}
 
 <table border=1>
