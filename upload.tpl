@@ -17,7 +17,7 @@
 
 {% for h in hws %}
 
-  <li>{% ifequal h.asgn hw.asgn %}<b>{% else %}<a href="grader.cgi?command=upload&asgn={{h.name}}">{% endifequal %}{{h.asgn}}{% ifequal h.asgn hw.asgn %}</b>{% else %}</a>{% endifequal %}
+  <li>{% ifequal h.asgn hw.asgn %}<b>{% else %}<a href="grader.cgi?command=upload&asgn={{h.id}}">{% endifequal %}{{h.asgn}}{% ifequal h.asgn hw.asgn %}</b>{% else %}</a>{% endifequal %}
 
 {% endfor %}
 
@@ -38,7 +38,7 @@
   </div>
   <form id="form1" name="form1" method="post" action="{{upload_url}}" enctype="multipart/form-data">
   <input type=hidden name=command value=uploadfile2>
-  <input type="hidden" name="asgn" value="{{hw.name}}">
+  <input type="hidden" name="asgn" value="{{hw.id}}">
   <table width="95%" border="0" cellspacing="2" cellpadding="2">
     <tr>
       <td width="7%" valign=top><b>1</b></td>
@@ -46,7 +46,7 @@
         <input class="zfieldtext" type="file" size=50 name="upload_file"><br>
       Or, to upload from the department server, run the following command:<br>
       &nbsp;&nbsp;<tt>/home/unixtool/bin/submit_hw {{sid}} {{sid_hash}} \<br>
-      &nbsp;&nbsp;{{hw.name}} <i>filename</i></tt>
+      &nbsp;&nbsp;{{hw.id}} <i>filename</i></tt>
       <br>
         If you submitted this file before and want to overwrite it, you must
         first delete the old version and then resubmit the new one.
@@ -70,13 +70,13 @@
 
   <form id="form2" name="form2" method="post" action="grader.cgi">
   <input type=hidden name=command value=uploadurl>
-  <input type="hidden" name="asgn" value="{{hw.name}}">
+  <input type="hidden" name="asgn" value="{{hw.id}}">
   <table width="95%" border="0" cellspacing="2" cellpadding="2">
    {% if hw.submit_url %}
     <tr id="submiturl">
       <td width="7%"><b>3</b></td>
       <td>
-        <input class="zfieldtext" type="text" size="50" id="upload_url" name="upload_url">
+        <input class="zfieldtext" type="text" size="50" id="upload_url" name="upload_url" value={{submitted_url}}>
                 <input class="zbutton" type="submit" name="uploadbtn"
                        value="Submit this URL"><br>
         Some homeworks or projects (e.g. Final project) require turning
@@ -93,7 +93,7 @@
         So far, the following files have been uploaded:
         <form name="form2" method="post" action="grader.cgi">
         <input type="hidden" name="command" value="rm">
-        <input type="hidden" name="asgn" value="{{hw.name}}">
+        <input type="hidden" name="asgn" value="{{hw.id}}">
         <input type="hidden" name="filename" value="">
         <table id="table" width="95%%" border="1" cellspacing="0">
         <tr>

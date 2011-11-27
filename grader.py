@@ -49,12 +49,14 @@ class UserInfo(db.Model):
   sid = db.StringProperty()
   last_action = db.DateTimeProperty()
 
+# not used yet
 class Grader(db.Model):
   name = db.StringProperty()
   sid = db.StringProperty()
   assignments = db.StringListProperty()
   is_admin = db.BooleanProperty()
 
+# not used yet
 class Assignment(db.Model):
   due_date = db.DateTimeProperty()
   title = db.StringProperty()
@@ -156,8 +158,6 @@ def basename(f):
 def fileinfo(content):
   result = []
   date = content.date.strftime('%D %H:%M:%S')
-  if not content.blob_key:
-    return
   try:
     zip = zipfile.ZipFile(blobstore.BlobReader(content.blob_key))
     for zipinfo in zip.infolist():
@@ -213,15 +213,18 @@ def cgi_upload(asgn=None):
     return cgi_home()
   sid = s.sid
   hws = config.hws()
-  hw_names = hws.keys()
-  hw_names.sort()
-  if not asgn: asgn = hw_names[-1]
+  if not asgn: asgn = config.HWS[-1]['id']
   files = []
   query = db.Query(UploadContent)
   query.filter('assignment =', asgn)
   query.filter('sid =', sid)
+  submitted_url = ''
   for r in query:
-    files.extend(fileinfo(r))
+    finfo = fileinfo(r)
+    if len(finfo) == 1 and finfo[0]['size'] == None:
+      submitted_url = finfo[0]['name']
+    elif finfo:
+      files.extend(finfo)
   upload_url = blobstore.create_upload_url('/upload')
   upload_url_parse = urlparse.urlparse(upload_url)
   upload_key = upload_url_parse.path.split('/')[-1]
@@ -232,13 +235,31 @@ def cgi_upload(asgn=None):
     'hw' : hws[asgn],
     'upload_url' : upload_url,
     'upload_key' : upload_key,
+    'submitted_url' : submitted_url,
     'files' : files,
   }
-  template_values['hws'] = []
-  for n in hw_names:
-    hws[n]['name'] = n
-    template_values['hws'].append(hws[n])
+  template_values['hws'] = config.HWS
   return output_template('upload.tpl', template_values)
+
+def cgi_uploadurl(asgn=None, upload_url='', uploadbtn=None):
+  s = get_user_info()
+  if not s.sid or not asgn or upload_url == '':
+    alert('Cannot upload URL')
+    back()
+    return
+  ul = UploadLog()
+  ul.filename = upload_url
+  ul.assignment = asgn
+  ul.sid = s.sid
+  ul.action = 'upload_url'
+  ul.put()
+  f = UploadContent(key_name='%s:%s:__url__' % (s.key().name(), asgn))
+  f.filename = upload_url
+  f.assignment = asgn
+  f.sid = s.sid
+  f.put()
+  alert('URL uploaded')
+  back()
 
 def cgi_rm(asgn=None, filename=None):
   s = get_user_info()
@@ -411,11 +432,15 @@ class DownloadHandler(webapp.RequestHandler):
     query = db.Query(UploadContent)
     query.filter('assignment =', asgn)
     for r in query:
-      b = blobstore.BlobReader(r.blob_key)
-      fn = 'ost_%s/%s.%s' % (str(r.assignment), str(r.sid or r.email),
-                             str(r.filename))
-      logging.debug('Write file %s' % fn)
-      file.writestr(fn, b.read())
+      if not r.blob_key:
+        fn = 'ost_%s/%s.__url__' % (str(r.assignment), str(r.sid or r.email))
+        file.writestr(fn, str(r.filename))
+      else:
+        b = blobstore.BlobReader(r.blob_key)
+        fn = 'ost_%s/%s.%s' % (str(r.assignment), str(r.sid or r.email),
+                               str(r.filename))
+        file.writestr(fn, b.read())
+      logging.debug('Wrote file %s' % fn)
     file.close()
     zipstream.seek(0)
     self.response.headers['Content-Type'] = 'applicaton/zip'
@@ -453,7 +478,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
       ul.action = 'upload'
       ul.put()
 
-    self.redirect('/grader.cgi?command=upload&asgn=%s' % f.assignment)
+      self.redirect('/grader.cgi?command=upload&asgn=%s' % f.assignment)
 
 class UploadHwHandler(webapp.RequestHandler):
   def get(self):
