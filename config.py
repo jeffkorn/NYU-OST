@@ -39,7 +39,7 @@ HWS = [
     'asgn': 'Assignment 3',
     'url': 'https://docs.google.com/document/pub?id=1Q5OsJR5weGJaHIgSXVvr0AOFxGLG-1v0ZBTQT8ztBa0',
     'submit_url' : 0,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
   {
     'id' : 'hw4',
@@ -49,17 +49,17 @@ HWS = [
     'submit_url' : 1,
     'grades_released' : 0,
   },
+  {
+    'id' : 'prj',
+    'due': 'Due 12/l8, 2011 11:59',
+    'asgn': 'Final Project',
+    'url': 'https://docs.google.com/document/pub?id=1kEIuoHjGbZ54pbJ0Xiv4N0NQGf1kzQqLMTqUNkGKXMg',
+    'submit_url' : 1,
+    'grades_released' : 0,
+  },
 ]
 
 UNASSIGNED_HWS = {
- 'prj': {
-    'due': 'Due 12/l7, 2010 5:00PM',
-    'asgn': 'Final Project',
-    'url': 'https://docs.google.com/View?docID=0AZzWs1b91j6dZDQ1djRzel81MmZnNHZwOWRt',
-    'submit_url' : 1,
-    'grades_released' : 1,
-    'default' : 1,
-  },
 }
 
 def projectGrade(points):
@@ -124,7 +124,7 @@ for hw in HWS:
   HW_MAP[hw['id']] = hw
 EXAM_MAP = {}
 for exam in EXAMS:
-  HW_MAP[exam['id']] = exam
+  EXAM_MAP[exam['id']] = exam
 
 def admins():
   return ADMINS
