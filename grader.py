@@ -431,7 +431,10 @@ class DownloadHandler(webapp.RequestHandler):
     asgn = self.request.params['asgn']
     query = db.Query(UploadContent)
     query.filter('assignment =', asgn)
+    suffix = self.request.params.has_key('suffix') and \
+        str(self.request.params['suffix']) or ""
     for r in query:
+      if suffix and not r.sid.endswith(suffix): continue
       if not r.blob_key:
         fn = 'ost_%s/%s.__url__' % (str(r.assignment), str(r.sid or r.email))
         file.writestr(fn, str(r.filename))
