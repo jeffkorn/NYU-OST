@@ -55,7 +55,7 @@ HWS = [
     'asgn': 'Final Project',
     'url': 'https://docs.google.com/document/pub?id=1kEIuoHjGbZ54pbJ0Xiv4N0NQGf1kzQqLMTqUNkGKXMg',
     'submit_url' : 1,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
 ]
 
