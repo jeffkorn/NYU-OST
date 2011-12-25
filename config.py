@@ -47,7 +47,7 @@ HWS = [
     'asgn': 'Assignment 4',
     'url': 'https://docs.google.com/document/pub?id=1b1AIcL8Sn5vN0zh5mkw5kDaSl8AAaWp0ysYlH9IjW44',
     'submit_url' : 1,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
   {
     'id' : 'prj',
@@ -55,7 +55,8 @@ HWS = [
     'asgn': 'Final Project',
     'url': 'https://docs.google.com/document/pub?id=1kEIuoHjGbZ54pbJ0Xiv4N0NQGf1kzQqLMTqUNkGKXMg',
     'submit_url' : 1,
-    'grades_released' : 1,
+    'grades_released' : 0,
+    'hide' : 1,
   },
 ]
 
@@ -63,25 +64,46 @@ UNASSIGNED_HWS = {
 }
 
 def projectGrade(points):
-  if points >= 90:
+  if points == 100:
     grade = 'A+'
-  elif points >= 85:
+  elif points >= 95:
     grade = 'A'
-  elif points > 75:
+  elif points >= 90:
     grade = 'A-'
-  elif points >= 75:
+  elif points >= 85:
     grade = 'B+'
-  elif points > 65:
+  elif points >= 80:
     grade = 'B'
-  elif points >= 65:
+  elif points >= 75:
     grade = 'B-'
-  elif points > 50:
+  elif points >= 70:
     grade = 'C+'
-  elif points >= 40:
+  elif points >= 60:
     grade = 'C'
   else:
     grade = 'F'
   return grade
+
+#def projectGrade(points):
+#  if points >= 90:
+#    grade = 'A+'
+#  elif points >= 85:
+#    grade = 'A'
+#  elif points > 75:
+#    grade = 'A-'
+#  elif points >= 75:
+#    grade = 'B+'
+#  elif points > 65:
+#    grade = 'B'
+#  elif points >= 65:
+#    grade = 'B-'
+#  elif points > 50:
+#    grade = 'C+'
+#  elif points >= 40:
+#    grade = 'C'
+#  else:
+#    grade = 'F'
+#  return grade
 
 EXAMS = [
   {
@@ -99,10 +121,16 @@ EXAMS = [
     'id' : 'test2',
     'name': 'Final',
     'file': '/home/unixtool/private/2010/final.csv', 
-    'grades_released' : 1,
+    'grades_released' : 0,
 #    'adjust' : lambda x: math.sqrt(x+7)*10-1.5,
     'adjust' : lambda x: 50 + (x/2),
     'letter' : 0,
+  },
+  {
+    'id' : 'project',
+    'name': 'Final Project',
+    'grades_released' : 0,
+    'letter' : 1,
   },
 ]
  

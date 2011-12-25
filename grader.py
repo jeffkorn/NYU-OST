@@ -299,7 +299,7 @@ def cgi_register(sid=None, name='', email=''):
   else:
     return cgi_register()
 
-def cgi_admin(sid=None, hw=None):
+def cgi_admin(sid=None, hw=None, csv=None):
   s = get_user_info()
   admin_sid = s.sid
   if not is_admin(admin_sid):
@@ -310,17 +310,22 @@ def cgi_admin(sid=None, hw=None):
   user_query = db.Query(UserInfo)
   user_query.filter('sid !=', None)
   upload_query = db.Query(UploadContent)
+  exam_query = db.Query(Exam)
   grades = {}
   submitted = {}
   for r in grade_query:
     grades[(r.sid,r.asgn)] = r.final_score
   for r in upload_query:
     submitted[(r.sid,r.assignment)] = True
+  for r in exam_query:
+    grades[(r.sid,r.exam_id)] = r.score
   students = []
   for r in user_query:
     info = { 'name' : r.name, 'sid' : r.sid or r.email, 'grades' : [] }
-    for hw in config.hws():
+    # for hw in config.HWS. + config.EXAMS:
+    for hw in config.hws().keys() + config.exams().keys():
       grade = {'asgn' : hw}
+      grade['show_link'] = config.exams().has_key(hw) and '0' or '1'
       if grades.has_key((r.sid, hw)):
         grade['score'] = grades[(r.sid, hw)]
       else:
@@ -337,7 +342,14 @@ def cgi_admin(sid=None, hw=None):
     'students' : students,
   }
   logging.info(str(template_values))
-  return output_template('admin.tpl', template_values)
+  if csv:
+    headers = {
+        'Content-Type' : 'applicaton/csv',
+        'Content-Disposition' : 'attachment; filename="grades.csv"',
+    }
+    return (headers, output_template('tally.tpl', template_values))
+  else:
+    return output_template('admin.tpl', template_values)
 
 def cgi_home(sid=None):
   s = get_user_info()
@@ -405,14 +417,22 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
       hws[idx[r.asgn]]['final_score'] = r.final_score
     for r in query2:
       hws[idx[r.assignment]]['has_file'] = 1
+    for hw in config.HWS:
+      if hw.get('hide', 0): del hws[idx[hw['id']]]
     query3 = db.Query(Exam)
     query3.filter('sid =', student_sid)
     exams = []
     for r in query3:
-      exams.append({
-        'name' : config.exams()[r.exam_id]['name'],
-        'score' : r.score,
-      })
+      exam_info = { }
+      exam_info.update(config.exams()[r.exam_id])
+      exam_info['score'] = exam_info.get('letter', 0) and \
+          config.projectGrade(r.score) or r.score
+      exams.append(exam_info)
+      # exams.append({
+      #   'name' : config.exams()[r.exam_id]['name'],
+      #   'grades_released' : config.exams()[r.exam_id]['grades_released'],
+      #   'score' : r.score,
+      # })
     template_values['hws'] = hws
     template_values['exams'] = exams
     logging.info(str(template_values['hws'][0]))
@@ -536,6 +556,11 @@ class ReqHandler(webapp.RequestHandler):
       response = handler(**args)
     else:
       response = cgi_home()
+    if type(response) == type(()):
+      # self.response.headers.update(response[0])
+      for k in response[0]:
+        self.response.headers[k] = response[0][k]
+      response = response[1]
     self.response.out.write(response)
 
 handlers = vars()
