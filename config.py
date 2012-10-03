@@ -10,13 +10,24 @@ ADMINS = {
 HWS = [
   {
     'id' : 'hw0',
-    'due': '9/15/11 before class',
+    'due': '9/17/12 before class',
     'asgn': 'Assignment 0',
-    'url': 'http://www.cs.nyu.edu/courses/fall11/CSCI-GA.3033-005/asgn/as0.html',
+    'url': 'http://www.cs.nyu.edu/courses/fall12/CSCI-GA.3033-004/asgn/as0.html',
     'submit_url' : 0,
     'grades_released' : 0,
     'verify' : verify.hw1
   },
+  {
+    'id' : 'hw1',
+    'due': '10/3/12 11:59PM',
+    'asgn': 'Assignment 1',
+    'url': 'https://docs.google.com/document/pub?id=1-sYCpnhCW2cJLglLfoVB4ieERkY3Btsw7XqppwSz5KY',
+    'submit_url' : 0,
+    'grades_released' : 0,
+  },
+]
+
+UNASSIGNED_HWS = {
   {
     'id' : 'hw1',
     'due': '9/29/11 before class',
@@ -58,9 +69,6 @@ HWS = [
     'grades_released' : 0,
     'hide' : 1,
   },
-]
-
-UNASSIGNED_HWS = {
 }
 
 def projectGrade(points):
