@@ -27,7 +27,7 @@ HWS = [
   },
 ]
 
-UNASSIGNED_HWS = {
+UNASSIGNED_HWS = [
   {
     'id' : 'hw1',
     'due': '9/29/11 before class',
@@ -69,7 +69,7 @@ UNASSIGNED_HWS = {
     'grades_released' : 0,
     'hide' : 1,
   },
-}
+]
 
 def projectGrade(points):
   if points == 100:
