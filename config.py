@@ -3,7 +3,7 @@ import math
 
 ADMINS = {
   'N00000000' : 'Prof. Korn',
-  'N14771834' : 'Royston Monteiro',
+  'N11887225' : 'Praveen Thirukonda',
   'N19223762' : 'Deniz Ulema',
 }
 
