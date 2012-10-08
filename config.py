@@ -4,7 +4,7 @@ import math
 ADMINS = {
   'N00000000' : 'Prof. Korn',
   'N11887225' : 'Praveen Thirukonda',
-  'N19223762' : 'Deniz Ulema',
+  'N16823985' : 'Libin Lu',
 }
 
 HWS = [
