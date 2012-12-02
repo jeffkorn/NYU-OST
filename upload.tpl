@@ -79,8 +79,7 @@
         <input class="zfieldtext" type="text" size="50" id="upload_url" name="upload_url" value={{submitted_url}}>
                 <input class="zbutton" type="submit" name="uploadbtn"
                        value="Submit this URL"><br>
-        Some homeworks or projects (e.g. Final project) require turning
-        in the URL.
+        This homework/project requires turning in the URL.
       </td>
     </tr>
    {% endif %}

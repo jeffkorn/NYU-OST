@@ -12,3 +12,8 @@ Download data:
   ~/google_appengine/appcfg.py download_data --url=http://nyu-csci.appspot.com/remote_api --filename=DOWNLOAD.csv --kind=Grade
   ~/google_appengine/appcfg.py download_data --config_file=bulkloader.yaml --url=http://nyu-csci.appspot.com/remote_api --filename=dump.csv --kind=Grade
 
+
+To sync:
+  git pull origin cleanup
+  git push origin cleanup
+
