@@ -47,20 +47,20 @@ HWS = [
     'asgn': 'Assignment 4',
     'url': 'https://docs.google.com/document/pub?id=1ozr1RoFM2N4OfNkmOjsFGKW4aQoXfTNe2SghPLvGvXU',
     'submit_url' : 1,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
-]
-
-UNASSIGNED_HWS = [
   {
     'id' : 'prj',
-    'due': 'Due 12/l8, 2011 11:59',
+    'due': 'Due 12/l6/12 11:59pm',
     'asgn': 'Final Project',
-    'url': 'https://docs.google.com/document/pub?id=1kEIuoHjGbZ54pbJ0Xiv4N0NQGf1kzQqLMTqUNkGKXMg',
+    'url': 'https://docs.google.com/document/pub?id=1Bmu6juZw1vVkBvze7rQi8olCEqx0rGAZPTN-_20abDs',
     'submit_url' : 1,
     'grades_released' : 0,
     'hide' : 1,
   },
+]
+
+UNASSIGNED_HWS = [
 ]
 
 def projectGrade(points):
