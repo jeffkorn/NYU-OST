@@ -3,7 +3,7 @@ To test:
   # -d = debug, -c = clear data first
 
 To deploy:
- ~/google_appengine/appcfg.py update .
+ ~/google_appengine/appcfg.py --oauth2 update .
 
 Console:
   http://localhost:8080/_ah/admin/datastore

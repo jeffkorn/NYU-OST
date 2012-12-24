@@ -314,7 +314,9 @@ def cgi_admin(sid=None, hw=None, csv=None):
   grades = {}
   submitted = {}
   for r in grade_query:
-    grades[(r.sid,r.asgn)] = r.final_score
+    pos = r.final_score.find('/')
+    grade = pos == -1 and r.final_score or r.final_score[0:pos]
+    grades[(r.sid,r.asgn)] = grade.strip()
   for r in upload_query:
     submitted[(r.sid,r.assignment)] = True
   for r in exam_query:

@@ -121,7 +121,7 @@ EXAMS = [
     'id' : 'test2',
     'name': 'Final',
     'file': '/home/unixtool/private/2010/final.csv', 
-    'grades_released' : 0,
+    'grades_released' : 1,
 #    'adjust' : lambda x: math.sqrt(x+7)*10-1.5,
     'adjust' : lambda x: 50 + (x/2),
     'letter' : 0,
@@ -129,7 +129,7 @@ EXAMS = [
   {
     'id' : 'project',
     'name': 'Final Project',
-    'grades_released' : 0,
+    'grades_released' : 1,
     'letter' : 1,
   },
 ]
