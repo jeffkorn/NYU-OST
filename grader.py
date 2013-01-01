@@ -417,6 +417,7 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     for r in query:
       logging.info(r.asgn)
       hws[idx[r.asgn]]['final_score'] = r.final_score
+      hws[idx[r.asgn]]['has_record'] = 1
     for r in query2:
       hws[idx[r.assignment]]['has_file'] = 1
     for hw in config.HWS:
@@ -512,7 +513,11 @@ class UploadHwHandler(webapp.RequestHandler):
 
 class UploadExamHandler(webapp.RequestHandler):
   def get(self):
-    template_values = { 'hws' : config.HWS, 'exams' : config.EXAMS }
+    template_values = {
+      'hws' : config.HWS,
+      'exams' : config.EXAMS,
+      'action' : 'upload_exam',
+    }
     self.response.out.write(output_template('admin_upload.tpl',
                                             template_values))
 
@@ -543,6 +548,55 @@ class UploadExamHandler(webapp.RequestHandler):
     self.response.out.write('</pre>')
     self.response.out.write('Uploaded %d records' % count)
 
+class UploadCommentsHandler(webapp.RequestHandler):
+  def get(self):
+    template_values = {
+      'hws' : config.HWS,
+      'exams' : config.EXAMS,
+      'action' : 'upload_comments',
+    }
+    self.response.out.write(output_template('admin_upload.tpl',
+                                            template_values))
+
+  def post(self):
+    s = get_user_info()
+    logging.debug('here')
+    if not is_admin(s.sid):
+      return
+    exam_id = self.request.params.get('exam_id', '')
+    hw_id = ''
+    if exam_id:
+      if not config.exams().has_key(exam_id): return
+    else:
+      hw_id = self.request.params.get('hw_id', '')
+      if not config.hws().has_key(hw_id): return
+    csv_file = self.request.get('csv_import')
+    fileReader = csv.reader(csv_file.split('\n'))
+    self.response.out.write('<h1>%s</h1>\n<pre>' % exam_id)
+    count = 0
+    self.response.out.write('</pre>')
+    for row in fileReader:
+      if len(row) == 0: continue
+      if len(row) != 3:
+        self.response.out.write('skip record: %s\n' % ','.join(row))
+        continue
+      (sid, name, comment) = row
+      self.response.out.write('Would upload this comment for %s:<br>' % sid)
+      self.response.out.write('<pre>\n')
+      self.response.out.write(comment.replace('|', '\n'))
+      self.response.out.write('</pre>\n')
+      if hw_id:
+        logging.debug('Lookup grade')
+        g = Grade(key_name='%s:%s' % (sid, hw_id))
+        g.sid = sid
+        g.asgn = hw_id
+        g.comments = comment.replace('|', '\n')
+        g.put()
+      count += 1
+    # self.response.out.write('</pre>')
+    self.response.out.write('Uploaded %d records' % count)
+
+
 class ReqHandler(webapp.RequestHandler):
   def get(self):
     self.post()
@@ -569,12 +623,13 @@ handlers = vars()
 
 def main():
   app = webapp.WSGIApplication([
-    ('/',             ReqHandler),
-    ('/grader.cgi',   ReqHandler),
-    ('/upload_hw',    UploadHwHandler),
-    ('/upload',       UploadHandler),
-    ('/upload_exam',  UploadExamHandler),
-    ('/download',     DownloadHandler),
+    ('/',                 ReqHandler),
+    ('/grader.cgi',       ReqHandler),
+    ('/upload_hw',        UploadHwHandler),
+    ('/upload',           UploadHandler),
+    ('/upload_exam',      UploadExamHandler),
+    ('/upload_comments',  UploadCommentsHandler),
+    ('/download',         DownloadHandler),
   ], debug=True)
   run_wsgi_app(app)
 

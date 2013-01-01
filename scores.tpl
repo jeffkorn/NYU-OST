@@ -31,7 +31,11 @@
     {% if hw.final_score %}
     <a href="grader.cgi?command=scores&asgn={{hw.name}}">Grade: {{hw.final_score}}</a>
     {% else %}
-    not graded yet
+      {% if hw.has_record %}
+        <a href="grader.cgi?command=scores&asgn={{hw.name}}">details</a>
+      {% else %}
+        not graded yet
+      {% endif %}
     {% endif %}
   {% endif %}
 {% endif %}
