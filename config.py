@@ -3,20 +3,23 @@ import math
 
 ADMINS = {
   'N00000000' : 'Prof. Korn',
-  'N11887225' : 'Praveen Thirukonda',
-  'N16823985' : 'Libin Lu',
+#  'N11887225' : 'Praveen Thirukonda',
+#  'N16823985' : 'Libin Lu',
 }
 
 HWS = [
   {
     'id' : 'hw0',
-    'due': '9/17/12 before class',
+    'due': '9/10/13 before class',
     'asgn': 'Assignment 0',
-    'url': 'http://www.cs.nyu.edu/courses/fall12/CSCI-GA.3033-004/asgn/as0.html',
+    'url': 'http://www.cs.nyu.edu/courses/fall13/CSCI-GA.3033-004/asgn/as0.html',
     'submit_url' : 0,
     'grades_released' : 0,
     'verify' : verify.hw1
   },
+]
+
+UNASSIGNED_HWS = [
   {
     'id' : 'hw1',
     'due': '10/3/12 11:59PM',
@@ -58,9 +61,6 @@ HWS = [
     'grades_released' : 1,
     'hide' : 0,
   },
-]
-
-UNASSIGNED_HWS = [
 ]
 
 def projectGrade(points):
@@ -106,6 +106,9 @@ def projectGrade(points):
 #  return grade
 
 EXAMS = [
+]
+ 
+UNASSIGNED_EXAMS = [
   {
     'id' : 'test1',
     'name': 'Midterm',
@@ -133,17 +136,6 @@ EXAMS = [
     'letter' : 1,
   },
 ]
- 
-UNASSIGNED_EXAMS = {
-  'test3': {
-    'name': 'Project',
-    'file': '/home/unixtool/private/2009/proj.csv', 
-    'grades_released' : 1,
-    'adjust' : lambda x: x + 10,
-    'letter' : 1,
-    'letter_convert' : lambda x : projectGrade(int(x)),
-  },
-}
 
 ######
 

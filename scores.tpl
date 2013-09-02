@@ -57,8 +57,10 @@
   </tr>
 {% endfor %}
 
+<!--
 <tr><td><b><font color=red>Final Grade</font></b></td>
 <td>&nbsp;</td><td><b><font color=red>Avail in January</font></b></td></tr>
+ -->
 
 </table>
 </BODY>
