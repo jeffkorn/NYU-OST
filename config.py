@@ -3,8 +3,9 @@ import math
 
 ADMINS = {
   'N00000000' : 'Prof. Korn',
-#  'N11887225' : 'Praveen Thirukonda',
-#  'N16823985' : 'Libin Lu',
+  'N16823985' : 'Libin Lu',
+  'N18098909' : 'Shancong Fu',
+  'N18962557' : 'Zicong Pan',
 }
 
 HWS = [
@@ -17,17 +18,17 @@ HWS = [
     'grades_released' : 0,
     'verify' : verify.hw1
   },
+  {
+    'id' : 'hw1',
+    'due': '9/25/13 11:59PM',
+    'asgn': 'Assignment 1',
+    'url': 'https://docs.google.com/document/d/1TABTNyDubqUCNR1QNhQsfcOrH0TwY4WL-KuIMi58ZyI/pub',
+    'submit_url' : 0,
+    'grades_released' : 0,
+  },
 ]
 
 UNASSIGNED_HWS = [
-  {
-    'id' : 'hw1',
-    'due': '10/3/12 11:59PM',
-    'asgn': 'Assignment 1',
-    'url': 'https://docs.google.com/document/pub?id=1-sYCpnhCW2cJLglLfoVB4ieERkY3Btsw7XqppwSz5KY',
-    'submit_url' : 0,
-    'grades_released' : 1,
-  },
   {
     'id' : 'hw2',
     'due': '10/22/12 before class',
