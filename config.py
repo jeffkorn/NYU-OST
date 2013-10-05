@@ -24,19 +24,19 @@ HWS = [
     'asgn': 'Assignment 1',
     'url': 'https://docs.google.com/document/d/1TABTNyDubqUCNR1QNhQsfcOrH0TwY4WL-KuIMi58ZyI/pub',
     'submit_url' : 0,
+    'grades_released' : 1,
+  },
+  {
+    'id' : 'hw2',
+    'due': '10/10/13 11:59PM',
+    'asgn': 'Assignment 2',
+    'url': 'https://docs.google.com/document/d/16yr1pHHu-4Sz-MlhlqfmlTIQNdZrtrWFYvXJmwpqY6A/preview',
+    'submit_url' : 0,
     'grades_released' : 0,
   },
 ]
 
 UNASSIGNED_HWS = [
-  {
-    'id' : 'hw2',
-    'due': '10/22/12 before class',
-    'asgn': 'Assignment 2',
-    'url': 'https://docs.google.com/document/pub?id=1PakfegsOdLfm8gW5JsllXfAAsROp_tKFog8PW09Ad9o',
-    'submit_url' : 0,
-    'grades_released' : 1,
-  },
   {
     'id' : 'hw3',
     'due': '11/15/12 10pm',
