@@ -6,6 +6,7 @@ ADMINS = {
   'N16823985' : 'Libin Lu',
   'N18098909' : 'Shancong Fu',
   'N18962557' : 'Zicong Pan',
+  'N19303071' : 'Xu He',
 }
 
 HWS = [
@@ -34,17 +35,17 @@ HWS = [
     'submit_url' : 0,
     'grades_released' : 0,
   },
+  {
+    'id' : 'hw3',
+    'due': '11/4/l3 11:59PM',
+    'asgn': 'Assignment 3',
+    'url': 'https://docs.google.com/document/d/11JY8QlcvsAE2PDcg7VYMKlUwhJ8GejP1gjkt5wfNdZs/preview',
+    'submit_url' : 0,
+    'grades_released' : 0,
+  },
 ]
 
 UNASSIGNED_HWS = [
-  {
-    'id' : 'hw3',
-    'due': '11/15/12 10pm',
-    'asgn': 'Assignment 3',
-    'url': 'https://docs.google.com/document/pub?id=10j9c2_7K6fhfN5Y0xWxgNFlbvxqcIHf8d8mILyo62ZM',
-    'submit_url' : 0,
-    'grades_released' : 1,
-  },
   {
     'id' : 'hw4',
     'due': '12/5/12 10pm',
