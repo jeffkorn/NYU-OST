@@ -33,7 +33,7 @@ HWS = [
     'asgn': 'Assignment 2',
     'url': 'https://docs.google.com/document/d/16yr1pHHu-4Sz-MlhlqfmlTIQNdZrtrWFYvXJmwpqY6A/preview',
     'submit_url' : 0,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
   {
     'id' : 'hw3',
@@ -41,28 +41,28 @@ HWS = [
     'asgn': 'Assignment 3',
     'url': 'https://docs.google.com/document/d/11JY8QlcvsAE2PDcg7VYMKlUwhJ8GejP1gjkt5wfNdZs/preview',
     'submit_url' : 0,
-    'grades_released' : 0,
+    'grades_released' : 1,
   },
-]
-
-UNASSIGNED_HWS = [
   {
     'id' : 'hw4',
-    'due': '12/5/12 10pm',
+    'due': '11/27/12 11:59pm',
     'asgn': 'Assignment 4',
-    'url': 'https://docs.google.com/document/pub?id=1ozr1RoFM2N4OfNkmOjsFGKW4aQoXfTNe2SghPLvGvXU',
+    'url': 'https://docs.google.com/document/d/1B7WtrJfTqlfBS6kUuJNvRr5vqkhCZwAnejFPmZEnk2w/preview',
     'submit_url' : 1,
     'grades_released' : 1,
   },
   {
     'id' : 'prj',
-    'due': 'Due 12/l6/12 11:59pm',
+    'due': 'Due 12/l6/13 11:59pm',
     'asgn': 'Final Project',
-    'url': 'https://docs.google.com/document/pub?id=1Bmu6juZw1vVkBvze7rQi8olCEqx0rGAZPTN-_20abDs',
+    'url': 'https://docs.google.com/document/d/1UBr8vtkSo0TLfh32ovx8Av0JBXURWMNBo-Fn4ZDoaNM/preview',
     'submit_url' : 1,
     'grades_released' : 1,
     'hide' : 0,
   },
+]
+
+UNASSIGNED_HWS = [
 ]
 
 def projectGrade(points):
@@ -108,9 +108,6 @@ def projectGrade(points):
 #  return grade
 
 EXAMS = [
-]
- 
-UNASSIGNED_EXAMS = [
   {
     'id' : 'test1',
     'name': 'Midterm',
@@ -137,6 +134,9 @@ UNASSIGNED_EXAMS = [
     'grades_released' : 1,
     'letter' : 1,
   },
+]
+ 
+UNASSIGNED_EXAMS = [
 ]
 
 ######
