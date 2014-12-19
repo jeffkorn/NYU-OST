@@ -1,5 +1,28 @@
+import datetime
 import verify
+import logging
 import math
+
+from google.appengine.ext import db
+from google.appengine.ext import ndb
+
+COURSE_ID = '2014'
+
+class Assignment(db.Model):
+  course_id = db.StringProperty()
+  due_date = db.DateTimeProperty()
+  hw_id = db.StringProperty()
+  title = db.StringProperty()
+  url = db.StringProperty()
+  verify_function = db.StringProperty()
+  grade_released = db.BooleanProperty(default=False)
+  is_assigned = db.BooleanProperty(default=True)
+  submit_url = db.BooleanProperty(default=False)
+
+class Grader(ndb.Model):
+  name = ndb.StringProperty()
+  sid = ndb.StringProperty()
+  assignments = ndb.StringProperty()
 
 ADMINS = {
   'N00000000' : 'Prof. Korn',
@@ -10,6 +33,9 @@ ADMINS = {
 }
 
 HWS = [
+]
+
+UNASSIGNED_HWS = [
   {
     'id' : 'hw0',
     'due': '9/10/13 before class',
@@ -60,9 +86,6 @@ HWS = [
     'grades_released' : 1,
     'hide' : 0,
   },
-]
-
-UNASSIGNED_HWS = [
 ]
 
 def projectGrade(points):
@@ -122,6 +145,17 @@ EXAMS = [
   {
     'id' : 'test2',
     'name': 'Final',
+    'file': '/home/unixtool/private/2010/final.csv',
+    'grades_released' : 1,
+    'adjust' : lambda x: 50.5 + (x/2),
+    'letter' : 0,
+  },
+]
+ 
+UNASSIGNED_EXAMS = [
+  {
+    'id' : 'test2',
+    'name': 'Final',
     'file': '/home/unixtool/private/2010/final.csv', 
     'grades_released' : 1,
 #    'adjust' : lambda x: math.sqrt(x+7)*10-1.5,
@@ -134,9 +168,6 @@ EXAMS = [
     'grades_released' : 1,
     'letter' : 1,
   },
-]
- 
-UNASSIGNED_EXAMS = [
 ]
 
 ######
@@ -156,3 +187,59 @@ def hws():
 
 def exams():
   return EXAM_MAP
+
+def create_sample_entries():
+  a = Assignment()
+  a.hw_id = 'as0'
+  a.due_date = datetime.datetime.now()
+  a.title = 'Asgn0'
+  a.is_assigned = True
+  a.url = 'http://www.google.com/'
+  a.grade_released = False
+  a.submit_url = False
+  a.verify_function = 'abc'
+  a.course_id = 'SAMPLE'
+  a.put()
+
+  g = Grader()
+  g.name = 'Sample'
+  g.sid = 'N1234'
+  g.assignments = 'a,b'
+  g.put()
+
+def load_config(course_id):
+  global HWS
+  global ADMINS
+  global EXAMS
+  global HW_MAP
+  global EXAM_MAP
+  HWS = []
+  # EXAMS = []
+  ADMINS = {}
+
+  query = db.Query(Assignment)
+  query.filter('course_id =', course_id)
+  for r in query:
+    if not r.is_assigned: continue
+    hw = { }
+    hw['id'] = str(r.hw_id)
+    hw['due'] = str(r.due_date)
+    hw['asgn'] = str(r.title)
+    hw['url'] = str(r.url)
+    hw['submit_url'] = r.submit_url
+    hw['grades_released'] = r.grade_released
+    hw['verify'] = getattr(verify, str(r.verify_function))
+    HWS.append(hw)
+    logging.debug('ADD %s' % str(hw))
+
+  query = Grader.query()
+  for r in query:
+    ADMINS[str(r.sid)] = str(r.name)
+
+  HWS = sorted(HWS, key=lambda x: x['due'])
+  HW_MAP = {}
+  for hw in HWS:
+    HW_MAP[hw['id']] = hw
+  # EXAM_MAP = {}
+  # for exam in EXAMS:
+  #   EXAM_MAP[exam['id']] = exam

@@ -19,6 +19,7 @@ import StringIO
 
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
+from google.appengine.ext import ndb
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import blobstore_handlers
@@ -31,6 +32,7 @@ class UploadContent(db.Model):
   contents = db.Blob()
   content_len = db.StringProperty()
   assignment = db.StringProperty()
+  course_id = db.StringProperty()
   date = db.DateTimeProperty(auto_now=True)
   blob_key = blobstore.BlobReferenceProperty()
 
@@ -38,6 +40,7 @@ class UploadLog(db.Model):
   sid = db.StringProperty()
   filename = db.StringProperty()
   assignment = db.StringProperty()
+  course_id = db.StringProperty()
   date = db.DateTimeProperty(auto_now=True)
   blob_key = blobstore.BlobReferenceProperty()
   user = db.StringProperty()
@@ -47,27 +50,13 @@ class UserInfo(db.Model):
   name = db.StringProperty()
   email = db.StringProperty()
   sid = db.StringProperty()
+  course_id = db.StringProperty()
   last_action = db.DateTimeProperty()
-
-# not used yet
-class Grader(db.Model):
-  name = db.StringProperty()
-  sid = db.StringProperty()
-  assignments = db.StringListProperty()
-  is_admin = db.BooleanProperty()
-
-# not used yet
-class Assignment(db.Model):
-  due_date = db.DateTimeProperty()
-  title = db.StringProperty()
-  url = db.StringProperty()
-  grade_released = db.BooleanProperty()
-  is_assigned = db.BooleanProperty()
-  submit_url = db.BooleanProperty()
 
 class Grade(db.Model):
   sid = db.StringProperty()
   asgn = db.StringProperty()
+  course_id = db.StringProperty()
   original_score = db.StringProperty()
   penalty = db.StringProperty()
   extra_points = db.StringProperty()
@@ -78,6 +67,7 @@ class Grade(db.Model):
 
 class Exam(db.Model):
   exam_id = db.StringProperty()
+  course_id = db.StringProperty()
   sid = db.StringProperty()
   name = db.StringProperty()
   score = db.FloatProperty()
@@ -100,9 +90,12 @@ def back():
 def get_user_info():
   aeu = users.get_current_user()
   s = UserInfo.get_or_insert(aeu.user_id(),
-                             email=aeu.email(), name=aeu.nickname()) 
+                             email=aeu.email(),
+                             course_id=config.COURSE_ID,
+                             name=aeu.nickname()) 
   s.last_action = datetime.datetime.now()
   s.put()
+  config.load_config(s.course_id)
   return s
 
 def userinfo_fromhash(sid, sid_hash):
@@ -110,6 +103,7 @@ def userinfo_fromhash(sid, sid_hash):
   query.filter('sid =', sid)
   for r in query:
     if r.sid == sid and sidHash(r) == sid_hash:
+      config.load_config(r.course_id)
       return r
   return None
 
@@ -198,6 +192,8 @@ def get_hws():
     result.append(hws[n])
     idx[n] = i
     i += 1
+  logging.info(str(result))
+  logging.info(str(idx))
   return (result, idx)
 
 def is_admin(sid):
@@ -216,6 +212,7 @@ def cgi_upload(asgn=None):
   if not asgn: asgn = config.HWS[-1]['id']
   files = []
   query = db.Query(UploadContent)
+  query.filter('course_id =', s.course_id)
   query.filter('assignment =', asgn)
   query.filter('sid =', sid)
   submitted_url = ''
@@ -252,11 +249,13 @@ def cgi_uploadurl(asgn=None, upload_url='', uploadbtn=None):
   ul.assignment = asgn
   ul.sid = s.sid
   ul.action = 'upload_url'
+  ul.course_id = s.course_id
   ul.put()
   f = UploadContent(key_name='%s:%s:__url__' % (s.key().name(), asgn))
   f.filename = upload_url
   f.assignment = asgn
   f.sid = s.sid
+  f.course_id = s.course_id
   f.put()
   alert('URL uploaded')
   back()
@@ -267,6 +266,7 @@ def cgi_rm(asgn=None, filename=None):
     return cgi_home()
   sid = s.sid
   query = db.Query(UploadContent)
+  query.filter('course_id =', s.course_id)
   query.filter('assignment =', asgn)
   query.filter('sid =', sid)
   query.filter('filename =', filename)
@@ -278,6 +278,7 @@ def cgi_rm(asgn=None, filename=None):
   ul.assignment = asgn
   ul.sid = sid
   ul.action = 'delete'
+  ul.course_id = s.course_id
   ul.put()
   return cgi_upload()
 
@@ -306,11 +307,16 @@ def cgi_admin(sid=None, hw=None, csv=None):
     return cgi_home()
   if hw != None:
     return cgi_scores(asgn=hw, student_sid=sid)
+  course_id = s.course_id  # was config.COURSE_ID
   grade_query = db.Query(Grade)
+  grade_query.filter('course_id =', course_id)
   user_query = db.Query(UserInfo)
+  user_query.filter('course_id =', course_id)
   user_query.filter('sid !=', None)
   upload_query = db.Query(UploadContent)
+  upload_query.filter('course_id =', course_id)
   exam_query = db.Query(Exam)
+  exam_query.filter('course_id =', course_id)
   grades = {}
   submitted = {}
   for r in grade_query:
@@ -325,7 +331,6 @@ def cgi_admin(sid=None, hw=None, csv=None):
   students = []
   for r in user_query:
     info = { 'name' : r.name, 'sid' : r.sid or r.email, 'grades' : [] }
-    # for hw in config.HWS. + config.EXAMS:
     for hw in config.hws().keys() + config.exams().keys():
       grade = {'asgn' : hw}
       grade['show_link'] = config.exams().has_key(hw) and '0' or '1'
@@ -375,6 +380,7 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     student_sid = student_sid or sid
   else:
     student_sid = sid
+  course_id = s.course_id
 
   template_values = {
     'sid' : sid,
@@ -394,11 +400,14 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
       g.grader = grader
       g.comments = comments
       g.private_comments = private_comments
+      g.course_id = course_id
       logging.info(g)
       g.put()
   query = db.Query(Grade)
+  query.filter('course_id =', course_id)
   query.filter('sid =', student_sid)
   query2 = db.Query(UploadContent)
+  query2.filter('course_id =', course_id)
   query2.filter('sid =', student_sid)
   if asgn:
     query.filter('asgn =', asgn)
@@ -424,6 +433,7 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
     for hw in config.HWS:
       if hw.get('hide', 0): del hws[idx[hw['id']]]
     query3 = db.Query(Exam)
+    query3.filter('course_id =', course_id)
     query3.filter('sid =', student_sid)
     exams = []
     for r in query3:
@@ -432,11 +442,6 @@ def cgi_scores(asgn=None, store=None, basic=None, extra=None, penalty=None,
       exam_info['score'] = exam_info.get('letter', 0) and \
           config.projectGrade(r.score) or r.score
       exams.append(exam_info)
-      # exams.append({
-      #   'name' : config.exams()[r.exam_id]['name'],
-      #   'grades_released' : config.exams()[r.exam_id]['grades_released'],
-      #   'score' : r.score,
-      # })
     template_values['hws'] = hws
     template_values['exams'] = exams
     logging.info(str(template_values['hws'][0]))
@@ -454,6 +459,7 @@ class DownloadHandler(webapp.RequestHandler):
     file = zipfile.ZipFile(zipstream, "w")
     asgn = self.request.params['asgn']
     query = db.Query(UploadContent)
+    query.filter('course_id =', s.course_id)
     query.filter('assignment =', asgn)
     suffix = self.request.params.has_key('suffix') and \
         str(self.request.params['suffix']) or ""
@@ -495,6 +501,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
       f.content_len = str(upload.size)
       f.blob_key = upload.key()
       f.sid = s.sid
+      f.course_id = s.course_id
       f.put()
 
       ul = UploadLog()
@@ -503,6 +510,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
       ul.sid = s.sid
       ul.blob_key = upload.key()
       ul.action = 'upload'
+      ul.course_id = s.course_id
       ul.put()
 
       self.redirect('/grader.cgi?command=upload&asgn=%s' % f.assignment)
@@ -544,6 +552,7 @@ class UploadExamHandler(webapp.RequestHandler):
       exam.sid = sid
       exam.name = name
       exam.score = float(score)
+      exam.course_id = s.course_id
       exam.put()
       count += 1
     self.response.out.write('</pre>')
@@ -592,16 +601,21 @@ class UploadCommentsHandler(webapp.RequestHandler):
         g.sid = sid
         g.asgn = hw_id
         g.comments = comment.replace('|', '\n')
+        g.course_id = s.course_id
         g.put()
       count += 1
-    # self.response.out.write('</pre>')
     self.response.out.write('Uploaded %d records' % count)
 
+class SetupHandler(webapp.RequestHandler):
+  def get(self):
+    config.create_sample_entries()
+    self.response.out.write('Done')
 
 class ReqHandler(webapp.RequestHandler):
   def get(self):
     self.post()
   def post(self):
+    logging.debug('LOADING')
     args = {}
     params = self.request.params
     for key in params:
@@ -614,7 +628,6 @@ class ReqHandler(webapp.RequestHandler):
     else:
       response = cgi_home()
     if type(response) == type(()):
-      # self.response.headers.update(response[0])
       for k in response[0]:
         self.response.headers[k] = response[0][k]
       response = response[1]
@@ -631,6 +644,7 @@ def main():
     ('/upload_exam',      UploadExamHandler),
     ('/upload_comments',  UploadCommentsHandler),
     ('/download',         DownloadHandler),
+    ('/setup',            SetupHandler),
   ], debug=True)
   run_wsgi_app(app)
 

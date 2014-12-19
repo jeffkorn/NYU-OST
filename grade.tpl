@@ -17,7 +17,7 @@
 <form action=grader.cgi method=post>
 <input type=hidden name=command value=scores>
 <input type=hidden name=store value=1>
-<input type=hidden name=asgn value={{name}}>
+<input type=hidden name=asgn value={{id}}>
 <input type=hidden name=student_sid value={{student_sid}}>
 {% endif %}
 
