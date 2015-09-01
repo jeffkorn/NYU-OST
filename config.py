@@ -6,7 +6,7 @@ import math
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
-COURSE_ID = '2014'
+COURSE_ID = '2015'
 
 class Assignment(db.Model):
   course_id = db.StringProperty()
