@@ -27,9 +27,7 @@ class Grader(ndb.Model):
 ADMINS = {
   'N00000000' : 'Prof. Korn',
   'N16823985' : 'Libin Lu',
-  'N18098909' : 'Shancong Fu',
-  'N18962557' : 'Zicong Pan',
-  'N19303071' : 'Xu He',
+  'N12734016' : 'Kun Liu',
 }
 
 HWS = [
@@ -135,7 +133,7 @@ EXAMS = [
     'id' : 'test1',
     'name': 'Midterm',
     'file': '/home/unixtool/private/2010/midterm.csv',
-    'grades_released' : 1,
+    'grades_released' : 0,
 #    'adjust' : lambda x: pow(x,.75) * pow(100,.25) + 12,
 #     'adjust' : lambda x: pow(x,.75) * pow(100,.25),
 #    'adjust' : lambda x: math.sqrt(x)*10,
@@ -146,7 +144,7 @@ EXAMS = [
     'id' : 'test2',
     'name': 'Final',
     'file': '/home/unixtool/private/2010/final.csv',
-    'grades_released' : 1,
+    'grades_released' : 0,
     'adjust' : lambda x: 50.5 + (x/2),
     'letter' : 0,
   },
