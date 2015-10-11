@@ -238,6 +238,20 @@ def load_config(course_id):
   HW_MAP = {}
   for hw in HWS:
     HW_MAP[hw['id']] = hw
+
+  # Use hardcoded homework for testing
+  if len(HW_MAP) == 0:
+    HWS =  [{
+    'id' : 'hw0',
+    'due': 'Configure error; contact administrator',
+    'asgn': 'Assignment 0',
+    'url': 'http://nyuos.com',
+    'submit_url' : 0,
+    'grades_released' : 0,
+    'verify' : verify.hw1
+    }]
+    HW_MAP['hw0'] = HWS[0]
+
   # EXAM_MAP = {}
   # for exam in EXAMS:
   #   EXAM_MAP[exam['id']] = exam

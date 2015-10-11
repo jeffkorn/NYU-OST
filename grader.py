@@ -149,9 +149,36 @@ def register(sid=None, name='', email=''):
 def basename(f):
   return os.path.basename(f)
 
+class UtcTzinfo(datetime.tzinfo):
+  def utcoffset(self, dt): return datetime.timedelta(0)
+  def dst(self, dt): return datetime.timedelta(0)
+  def tzname(self, dt): return 'UTC'
+  def olsen_name(self): return 'UTC'
+
+class EdtTzinfo(datetime.tzinfo):
+  def utcoffset(self, dt): return datetime.timedelta(hours=-5)
+  def dst(self, dt): return datetime.timedelta(0)
+  def tzname(self, dt): return 'EST+05EDT'
+  def olsen_name(self): return 'US/Eastern'
+
+class EstTzinfo(datetime.tzinfo):
+  def utcoffset(self, dt): return datetime.timedelta(hours=-4)
+  def dst(self, dt): return datetime.timedelta(0)
+  def tzname(self, dt): return 'EST+05EDT'
+  def olsen_name(self): return 'US/Eastern'
+
+TZINFOS = {
+  'utc': UtcTzinfo(),
+  'est': EstTzinfo(),
+  'edt': EdtTzinfo(),
+}
+
 def fileinfo(content):
   result = []
-  date = content.date.strftime('%D %H:%M:%S')
+  t = content.date
+  t = t.replace(tzinfo=TZINFOS['utc'])
+  date = t.astimezone(TZINFOS['est']).strftime('%D %H:%M:%S EDT')
+
   try:
     zip = zipfile.ZipFile(blobstore.BlobReader(content.blob_key))
     for zipinfo in zip.infolist():
