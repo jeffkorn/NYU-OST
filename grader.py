@@ -177,7 +177,7 @@ def fileinfo(content):
   result = []
   t = content.date
   t = t.replace(tzinfo=TZINFOS['utc'])
-  date = t.astimezone(TZINFOS['est']).strftime('%D %H:%M:%S EDT')
+  date = t.astimezone(TZINFOS['edt']).strftime('%D %H:%M:%S EDT')
 
   try:
     zip = zipfile.ZipFile(blobstore.BlobReader(content.blob_key))
@@ -485,6 +485,7 @@ class DownloadHandler(webapp.RequestHandler):
     zipstream = StringIO.StringIO()
     file = zipfile.ZipFile(zipstream, "w")
     asgn = self.request.params['asgn']
+    course = self.request.params.get('course', s.course_id)
     query = db.Query(UploadContent)
     query.filter('course_id =', s.course_id)
     query.filter('assignment =', asgn)

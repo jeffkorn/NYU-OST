@@ -1,5 +1,6 @@
 <form method="post" action="{{action}}" enctype="multipart/form-data">
 
+Format: <i>sid, name, score</i><br>
 Exam Name: <select name="exam_id">
 
 <option value="">None</option>
