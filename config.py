@@ -133,7 +133,7 @@ EXAMS = [
     'id' : 'test1',
     'name': 'Midterm',
     'file': '/home/unixtool/private/2010/midterm.csv',
-    'grades_released' : 0,
+    'grades_released' : 1,
 #    'adjust' : lambda x: pow(x,.75) * pow(100,.25) + 12,
 #     'adjust' : lambda x: pow(x,.75) * pow(100,.25),
 #    'adjust' : lambda x: math.sqrt(x)*10,
