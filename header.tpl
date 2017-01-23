@@ -5,7 +5,7 @@
       <CENTER><FONT size=+0><I>NYU, Graduate Division, Computer 
       Science</I></FONT><BR><FONT size=+3><B>Open Source Tools</B></FONT><BR>
         <FONT 
-      size=+1>GA.2246-001: Fall 2015</FONT><BR>
+      size=+1>GA.2246-001: Spring 2017</FONT><BR>
       </CENTER>
     </TD>
     </TR>

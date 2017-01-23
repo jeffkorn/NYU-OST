@@ -6,7 +6,7 @@ import math
 from google.appengine.ext import db
 from google.appengine.ext import ndb
 
-COURSE_ID = '2015'
+COURSE_ID = '2017'
 
 class Assignment(db.Model):
   course_id = db.StringProperty()
@@ -27,7 +27,6 @@ class Grader(ndb.Model):
 ADMINS = {
   'N00000000' : 'Prof. Korn',
   'N16823985' : 'Libin Lu',
-  'N12734016' : 'Kun Liu',
 }
 
 HWS = [
